@@ -154,6 +154,9 @@
     <ResourceCompile Include="NotePaint.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="calc.ico" />
+    <Image Include="mspaint.ico" />
+    <Image Include="notepad.ico" />
     <Image Include="NotePaint.ico" />
     <Image Include="small.ico" />
   </ItemGroup>
