@@ -14,6 +14,7 @@ ATOM                MyRegisterClass(HINSTANCE);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+BOOL                CreateIconButton(HWND, int, HICON);
 
 int APIENTRY wWinMain(_In_ HINSTANCE    hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -71,7 +72,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hInstance      = hInstance;
     wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_NOTEPAINT));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW + 1);
+    wcex.hbrBackground  = (HBRUSH)COLOR_WINDOW;
     wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_NOTEPAINT);
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
@@ -94,7 +95,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     hInst = hInstance;
 
     HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+        CW_USEDEFAULT, 0, 654, 410, nullptr, nullptr, hInstance, nullptr);
 
     if (!hWnd) {
         return FALSE;
@@ -120,6 +121,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
+    case WM_CREATE:
+        {
+            CreateIconButton(hWnd, 1, (HICON)LoadImage(hInst, MAKEINTRESOURCE(IDI_CALC), IMAGE_ICON, 0, 0, 0));
+            CreateIconButton(hWnd, 2, (HICON)LoadImage(hInst, MAKEINTRESOURCE(IDI_NOTEPAD), IMAGE_ICON, 0, 0, 0));
+            CreateIconButton(hWnd, 3, (HICON)LoadImage(hInst, MAKEINTRESOURCE(IDI_MSPAINT), IMAGE_ICON, 0, 0, 0));
+        }
+        break;
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
@@ -172,4 +180,27 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return (INT_PTR)FALSE;
+}
+
+// 아이콘 버튼을 각각 첫 번째, 두 번째, 그리고 세 번째 자리에 생성하는 함수입니다.
+BOOL CreateIconButton(HWND hWnd, int order, HICON hIcon)
+{
+    if (!(1 <= order && order <= 3)) return FALSE;
+
+    HWND hwndButton = CreateWindowW(
+        L"BUTTON",
+        nullptr,
+        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | BS_ICON,
+        90 + 160 * (order - 1),
+        99,
+        136,
+        136,
+        hWnd,
+        nullptr,
+        hInst,
+        nullptr);
+
+    SendMessageW(hwndButton, BM_SETIMAGE, IMAGE_ICON, (LPARAM)hIcon);
+
+    return TRUE;
 }
