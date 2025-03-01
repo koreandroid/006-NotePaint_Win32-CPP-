@@ -54,7 +54,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE    hInstance,
 }
 
 
-
 //
 //  FUNCTION: MyRegisterClass(HINSTANCE)
 //
@@ -184,7 +183,9 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 // 아이콘 버튼을 각각 첫 번째, 두 번째, 그리고 세 번째 자리에 생성하는 함수입니다.
 BOOL CreateIconButton(HWND hWnd, int order, HICON hIcon)
 {
-    if (!(1 <= order && order <= 3)) return FALSE;
+    if (!(1 <= order && order <= 3)) {
+        return FALSE;
+    }
 
     HWND hwndButton = CreateWindowW(
         L"BUTTON",
@@ -198,6 +199,10 @@ BOOL CreateIconButton(HWND hWnd, int order, HICON hIcon)
         nullptr,
         hInst,
         nullptr);
+
+    if (!hwndButton) {
+        return FALSE;
+    }
 
     SendMessageW(hwndButton, BM_SETIMAGE, IMAGE_ICON, (LPARAM)hIcon);
 
