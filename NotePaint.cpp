@@ -11,7 +11,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // The main window class name.
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE);
-BOOL                InitInstance(HINSTANCE, int);
+HWND                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 BOOL                CreateIconButton(HWND, int, HICON);
@@ -31,19 +31,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE    hInstance,
     LoadStringW(hInstance, IDC_NOTEPAINT, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
 
-    // Perform application initialization:
-    if (!InitInstance(hInstance, nCmdShow)) {
+    HWND hWnd = InitInstance(hInstance, nCmdShow);
+
+    if (!hWnd) {
         return FALSE;
     }
 
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_NOTEPAINT));
+    //HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_NOTEPAINT));
 
     MSG msg;
 
     // Main message loop:
     while (GetMessage(&msg, nullptr, 0, 0))
     {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) {
+        if (!IsDialogMessage(hWnd, &msg)) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
@@ -90,21 +91,19 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //      In this function, we save the instance handle in a global variable and
 //      create and display the main program window.
 //
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+HWND InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance;
 
-    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, 0, 654, 410, nullptr, nullptr, hInstance, nullptr);
+    HWND hWnd;
 
-    if (!hWnd) {
-        return FALSE;
+    if (hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, 0, 654, 410, nullptr, nullptr, hInstance, nullptr)) {
+        ShowWindow(hWnd, nCmdShow);
+        UpdateWindow(hWnd);
     }
 
-    ShowWindow(hWnd, nCmdShow);
-    UpdateWindow(hWnd);
-
-    return TRUE;
+    return hWnd;
 }
 
 //
@@ -190,7 +189,7 @@ BOOL CreateIconButton(HWND hWnd, int order, HICON hIcon)
     HWND hwndButton = CreateWindowW(
         L"BUTTON",
         nullptr,
-        WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | BS_ICON,
+        WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | BS_ICON,
         90 + 160 * (order - 1),
         99,
         136,
